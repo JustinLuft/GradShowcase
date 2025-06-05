@@ -25,7 +25,7 @@
   
   --background: #ffffff;     /* Clean white background */
   --background-alt: #f8fafc; /* Light gray for alternate sections */
-  --background-dark: #1e293b; /* Dark background for dark mode */
+  --background-dark: #ffffff; /* Dark background for dark mode */
   
   --text-primary: #1e293b;   /* Dark slate for primary text */
   --text-secondary: #64748b; /* Medium slate for secondary text */
@@ -73,7 +73,7 @@
 
 /* Dark Mode Variables */
 [data-theme="dark"] {
-  --background: #0f172a;
+  --background: #ffffff;
   --background-alt: #1e293b;
   --text-primary: #f1f5f9;
   --text-secondary: #cbd5e1;

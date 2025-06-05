@@ -17,39 +17,40 @@ const config = {
     },
     extend: {
       colors: {
-        border: "#2a2a2a",
-        input: "#1e1e1e",
-        ring: "#ffc107",
-        background: "#121212",
-        foreground: "#f5f5f5",
+        border: "#e2e8f0", // light gray border
+        input: "#f8fafc",  // very light gray input background
+        ring: "#2563eb",   // blue ring for focus
+        background: "#ffffff", // white background
+        foreground: "#1e293b", // dark slate for text
         primary: {
-          DEFAULT: "#d32f2f",
-          foreground: "#f5f5f5",
-          hover: "#e53935"
+          DEFAULT: "#1a237e",      // darker, greyish blue
+          foreground: "#ffffff",   // white text on blue
+          hover: "#283593",        // slightly lighter for hover
         },
         secondary: {
-          DEFAULT: "#1e1e1e",
-          foreground: "#f5f5f5",
+          DEFAULT: "#10b981",      // green accent (used for highlights, badges)
+          foreground: "#ffffff",   // white text on green
+          hover: "#059669",        // darker green for hover
         },
         accent: {
-          DEFAULT: "#ffc107",
-          foreground: "#121212",
+          DEFAULT: "#38bdf8",      // sky blue accent (for highlights)
+          foreground: "#1e293b",   // dark text on blue
         },
-        destructive: {
-          DEFAULT: "#dc2626",
-          foreground: "#f5f5f5",
+        section: {
+          DEFAULT: "#334155",      // dark blue-grey for section backgrounds
+          foreground: "#f1f5f9",   // light text on section
         },
         muted: {
-          DEFAULT: "#2a2a2a",
-          foreground: "#a1a1a1",
+          DEFAULT: "#f1f5f9",      // very light gray for muted backgrounds
+          foreground: "#64748b",   // muted slate for text
         },
         popover: {
-          DEFAULT: "#1e1e1e",
-          foreground: "#f5f5f5",
+          DEFAULT: "#f8fafc",      // very light gray for popovers
+          foreground: "#1e293b",
         },
         card: {
-          DEFAULT: "#1e1e1e",
-          foreground: "#f5f5f5",
+          DEFAULT: "#f8fafc",      // very light gray for cards
+          foreground: "#1e293b",
         },
       },
       borderRadius: {
