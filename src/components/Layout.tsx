@@ -4,28 +4,40 @@ import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 import { auth } from '../firebase/firebase'; // Adjust path as needed
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User, getIdTokenResult } from 'firebase/auth';
 
 const Layout = () => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [user, setUser] = React.useState<User | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [isAdmin, setIsAdmin] = React.useState(false);
 
   React.useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       setLoading(false);
+
+      if (firebaseUser) {
+        try {
+          const idTokenResult = await getIdTokenResult(firebaseUser, true);
+          setIsAdmin(!!idTokenResult.claims.admin);
+        } catch (error) {
+          console.error('Failed to get token claims:', error);
+          setIsAdmin(false);
+        }
+      } else {
+        setIsAdmin(false);
+      }
     });
+
     return unsubscribe;
   }, []);
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      // onAuthStateChanged listener will update user state
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -40,193 +52,142 @@ const Layout = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-background">
+    <div className="relative min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center">
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-              <nav className="flex flex-col space-y-4">
-                <a className="flex items-center space-x-2 font-heading" href="/">
-                  <span className="font-bold">Carolina Graduate Showcase</span>
-                </a>
-                <Separator />
-                <ScrollArea className="h-[calc(100vh-8rem)] pb-10">
-                  <div className="flex flex-col space-y-2">
-                    <a
-                      href="/graduates"
-                      className="text-foreground/60 hover:text-foreground transition-colors"
-                    >
-                      Graduates
-                    </a>
-                    <a
-                      href="/projects"
-                      className="text-foreground/60 hover:text-foreground transition-colors"
-                    >
-                      Projects
-                    </a>
-                    <a
-                      href="/employers"
-                      className="text-foreground/60 hover:text-foreground transition-colors"
-                    >
-                      Employers
-                    </a>
-                    <a
-                      href="/about"
-                      className="text-foreground/60 hover:text-foreground transition-colors"
-                    >
-                      About
-                    </a>
-                  </div>
-                </ScrollArea>
-              </nav>
-            </SheetContent>
-          </Sheet>
-          <div className="flex w-full items-center justify-between">
-            <div className="hidden md:flex">
-              <nav className="flex items-center space-x-6 text-sm font-medium">
-                <a href="/" className="font-heading font-bold">
-                  Carolina Graduate Showcase
-                </a>
-                <a
-                  href="/graduates"
-                  className="text-foreground/60 hover:text-foreground transition-colors"
-                >
-                  Graduates
-                </a>
-                <a
-                  href="/projects"
-                  className="text-foreground/60 hover:text-foreground transition-colors"
-                >
-                  Projects
-                </a>
-                <a
-                  href="/employers"
-                  className="text-foreground/60 hover:text-foreground transition-colors"
-                >
-                  Employers
-                </a>
-                <a
-                  href="/about"
-                  className="text-foreground/60 hover:text-foreground transition-colors"
-                >
-                  About
-                </a>
-              </nav>
+      <header className="sticky top-0 z-50 bg-white shadow-sm border-b backdrop-blur-sm bg-white/95">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-pink-600 rounded flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">BC</span>
+                </div>
+                <span className="font-bold text-xl text-gray-900">buildcarolina</span>
+              </Link>
             </div>
 
-            {/* Right side buttons */}
-            <div className="flex items-center justify-end space-x-4">
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex space-x-12">
+              <Link to="/graduates" className="text-gray-700 hover:text-blue-600 font-medium">
+                Graduates
+              </Link>
+              <Link to="/projects" className="text-gray-700 hover:text-blue-600 font-medium">
+                Projects
+              </Link>
+              <Link to="/success-stories" className="text-gray-700 hover:text-blue-600 font-medium">
+                Success Stories
+              </Link>
+
+              {/* Show management button if admin */}
+              {isAdmin && (
+                <Link to="/manage">
+                  <Button className="bg-green-600 text-white hover:bg-green-700">
+                    Management
+                  </Button>
+                </Link>
+              )}
+            </nav>
+
+            {/* Right side buttons - Authentication */}
+            <div className="hidden md:flex items-center space-x-4">
               {loading ? (
-                <div className="hidden md:inline-flex text-sm text-foreground/60">
+                <div className="text-sm text-gray-600">
                   Loading...
                 </div>
               ) : !user ? (
                 <>
-                  <Link to="/signin" className="hidden md:inline-flex">
-                    <Button className="bg-blue-900 text-white hover:bg-blue-800">
+                  <Link to="/signin">
+                    <Button className="bg-pink-600 text-white hover:bg-pink-700">
                       Login
                     </Button>
                   </Link>
-                  <Link to="/register" className="hidden md:inline-flex">
-                    <Button className="bg-blue-900 text-white hover:bg-blue-800">
+                  <Link to="/register">
+                    <Button className="bg-pink-600 text-white hover:bg-pink-700">
                       Register
                     </Button>
                   </Link>
                 </>
               ) : (
                 <>
-                  <span className="hidden md:inline-flex text-sm font-medium">
+                  <span className="text-sm font-medium text-gray-900">
                     {getUserName()}
                   </span>
-                  <Button variant="outline" onClick={handleLogout}>
+                  <Button variant="outline" onClick={handleLogout} className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
                     Logout
                   </Button>
                 </>
               )}
             </div>
+
+            {/* Mobile menu button */}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px]">
+                <nav className="flex flex-col space-y-4 mt-6">
+                  <Link to="/graduates" className="text-gray-700 hover:text-blue-600 font-medium">
+                    Graduates
+                  </Link>
+                  <Link to="/projects" className="text-gray-700 hover:text-blue-600 font-medium">
+                    Projects
+                  </Link>
+                  <Link to="/success-stories" className="text-gray-700 hover:text-blue-600 font-medium">
+                    Success Stories
+                  </Link>
+
+                  {/* Mobile management button if admin */}
+                  {isAdmin && (
+                    <Link to="/management">
+                      <Button className="bg-green-600 text-white hover:bg-green-700">
+                        Management
+                      </Button>
+                    </Link>
+                  )}
+
+                  <Separator className="my-4" />
+                  {/* Mobile Authentication */}
+                  {loading ? (
+                    <div className="text-sm text-gray-600">
+                      Loading...
+                    </div>
+                  ) : !user ? (
+                    <>
+                      <Link to="/signin">
+                        <Button className="w-full bg-pink-600 text-white hover:bg-pink-700">
+                          Login
+                        </Button>
+                      </Link>
+                      <Link to="/register">
+                        <Button className="w-full bg-pink-600 text-white hover:bg-pink-700">
+                          Register
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="text-sm font-medium text-gray-900 px-2">
+                        Welcome, {getUserName()}
+                      </div>
+                      <Button variant="outline" onClick={handleLogout} className="w-full border-red-500 text-red-500 hover:bg-red-500 hover:text-white">
+                        Logout
+                      </Button>
+                    </>
+                  )}
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container py-6 md:py-10">
+      <main>
         <Outlet />
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border/40 bg-background">
-        <div className="container py-6 md:py-8">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <h3 className="font-heading text-lg font-semibold">About</h3>
-              <p className="mt-4 text-sm text-foreground/60">
-                Showcasing talented graduates from Carolina's top programs.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-heading text-lg font-semibold">Quick Links</h3>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/graduates"
-                    className="text-foreground/60 hover:text-foreground transition-colors"
-                  >
-                    Browse Graduates
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/projects"
-                    className="text-foreground/60 hover:text-foreground transition-colors"
-                  >
-                    View Projects
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-heading text-lg font-semibold">Resources</h3>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/employers"
-                    className="text-foreground/60 hover:text-foreground transition-colors"
-                  >
-                    For Employers
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/about"
-                    className="text-foreground/60 hover:text-foreground transition-colors"
-                  >
-                    About Platform
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-heading text-lg font-semibold">Contact</h3>
-              <ul className="mt-4 space-y-2 text-sm">
-                <li className="text-foreground/60">Email: contact@example.com</li>
-                <li className="text-foreground/60">Phone: (123) 456-7890</li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 border-t border-border/40 pt-8 text-center">
-            <p className="text-sm text-foreground/60">
-              © {new Date().getFullYear()} Carolina Graduate Showcase. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

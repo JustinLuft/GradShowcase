@@ -48,6 +48,7 @@ interface ProfileData extends ProfileFormValues {
   profileImage?: string;
   updatedAt?: string;
   createdAt?: string;
+  isVerified?: boolean;
 }
 
 // Common skill tags
@@ -190,7 +191,11 @@ export default function GraduateProfileForm() {
       ...values,
       profileImage,
       updatedAt: new Date().toISOString(),
-      ...(profileExists ? {} : { createdAt: new Date().toISOString() })
+      // Only set isVerified and createdAt for new profiles
+      ...(profileExists ? {} : { 
+        createdAt: new Date().toISOString(),
+        isVerified: false 
+      })
     };
 
     try {

@@ -7,7 +7,7 @@ import CreateProfilePage from './pages/CreateProfilePage';
 import BrowseGraduatesPage from './pages/BrowseGraduatesPage';
 import NotFound from './pages/NotFound';
 import RegistrationPage from './pages/RegistrationPage'; // adjust this path if needed
-
+import Manage from './pages/Manage'; // Capital M here
 
 const App = () => {
   return (
@@ -20,7 +20,7 @@ const App = () => {
           <Route path="graduates" element={<BrowseGraduatesPage />} />
           <Route path="*" element={<NotFound />} />
           <Route path="register" element={<RegistrationPage />} />
-
+          <Route path="manage" element={<Manage />} />
         </Route>
       </Routes>
     </Router>
