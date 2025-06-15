@@ -104,10 +104,10 @@ const IndexPage = () => {
       <section className="py-16 px-4 bg-white">
         <div className="container max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="border-2 border-gray-100 hover:border-pink-200 transition-colors bg-white rounded-lg shadow-sm group">
+            <div className="border-2 border-gray-100 bg-white rounded-lg shadow-sm group transition-colors custom-hover-border">
               <div className="p-8 text-center">
-                <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-pink-200 transition-colors">
-                  <Code className="w-8 h-8 text-pink-600" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#A3B5C1' }}>
+                  <Code className="w-8 h-8 text-[#354866]" />
                 </div>
                 <h3 className="text-xl font-bold mb-4">Showcase Your Skills</h3>
                 <p className="text-gray-600 mb-4">
@@ -121,10 +121,10 @@ const IndexPage = () => {
               </div>
             </div>
 
-            <div className="border-2 border-gray-100 hover:border-pink-200 transition-colors bg-white rounded-lg shadow-sm group">
+            <div className="border-2 border-gray-100 bg-white rounded-lg shadow-sm group transition-colors custom-hover-border">
               <div className="p-8 text-center">
-                <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-pink-200 transition-colors">
-                  <Search className="w-8 h-8 text-pink-600" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#A3B5C1' }}>
+                  <Search className="w-8 h-8 text-[#354866]" />
                 </div>
                 <h3 className="text-xl font-bold mb-4">Get Discovered</h3>
                 <p className="text-gray-600 mb-4">
@@ -138,10 +138,10 @@ const IndexPage = () => {
               </div>
             </div>
 
-            <div className="border-2 border-gray-100 hover:border-pink-200 transition-colors bg-white rounded-lg shadow-sm group">
+            <div className="border-2 border-gray-100 bg-white rounded-lg shadow-sm group transition-colors custom-hover-border">
               <div className="p-8 text-center">
-                <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-pink-200 transition-colors">
-                  <Building className="w-8 h-8 text-pink-600" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#A3B5C1' }}>
+                  <Building className="w-8 h-8 text-[#354866]" />
                 </div>
                 <h3 className="text-xl font-bold mb-4">Connect with Local Talent</h3>
                 <p className="text-gray-600 mb-4">

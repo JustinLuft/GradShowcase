@@ -8,6 +8,8 @@ import BrowseGraduatesPage from './pages/BrowseGraduatesPage';
 import NotFound from './pages/NotFound';
 import RegistrationPage from './pages/RegistrationPage'; // adjust this path if needed
 import Manage from './pages/Manage'; // Capital M here
+import Projects from './pages/Projects';
+import Success from './pages/Success';
 
 const App = () => {
   return (
@@ -21,6 +23,8 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
           <Route path="register" element={<RegistrationPage />} />
           <Route path="manage" element={<Manage />} />
+          <Route path="projects" element={<Projects />}/>
+          <Route path="success" element={<Success />}/>
         </Route>
       </Routes>
     </Router>

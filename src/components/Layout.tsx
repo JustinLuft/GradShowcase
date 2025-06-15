@@ -63,30 +63,23 @@ const Layout = () => {
                 <div className="w-8 h-8 bg-pink-600 rounded flex items-center justify-center">
                   <span className="text-white font-bold text-sm">BC</span>
                 </div>
-                <span className="font-bold text-xl text-gray-900">buildcarolina</span>
+                <span className="font-bold text-xl text-gray-900">Build Carolina Graduate Showcase</span>
               </Link>
             </div>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-12">
+            <nav className="hidden md:flex items-center space-x-12">
               <Link to="/graduates" className="text-gray-700 hover:text-blue-600 font-medium">
                 Graduates
               </Link>
               <Link to="/projects" className="text-gray-700 hover:text-blue-600 font-medium">
                 Projects
               </Link>
-              <Link to="/success-stories" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link to="/success" className="text-gray-700 hover:text-blue-600 font-medium">
                 Success Stories
               </Link>
 
-              {/* Show management button if admin */}
-              {isAdmin && (
-                <Link to="/manage">
-                  <Button className="bg-green-600 text-white hover:bg-green-700">
-                    Management
-                  </Button>
-                </Link>
-              )}
+              
             </nav>
 
             {/* Right side buttons - Authentication */}
@@ -110,6 +103,15 @@ const Layout = () => {
                 </>
               ) : (
                 <>
+                {/* Show management button if admin */}
+                {isAdmin && (
+                <Link to="/manage">
+                  <Button className="bg-green-600 text-white hover:bg-green-700">
+                    Management
+                  </Button>
+                </Link>
+                )}
+
                   <span className="text-sm font-medium text-gray-900">
                     {getUserName()}
                   </span>
@@ -135,7 +137,7 @@ const Layout = () => {
                   <Link to="/projects" className="text-gray-700 hover:text-blue-600 font-medium">
                     Projects
                   </Link>
-                  <Link to="/success-stories" className="text-gray-700 hover:text-blue-600 font-medium">
+                  <Link to="/success" className="text-gray-700 hover:text-blue-600 font-medium">
                     Success Stories
                   </Link>
 
