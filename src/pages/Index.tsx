@@ -27,10 +27,10 @@ const IndexPage = () => {
           }}
         ></div>
         
-        <div className="relative container max-w-6xl mx-auto px-4 py-20">
+        <div className="relative container max-w-6xl mx-auto mt-5 mb-5 px-4 py-20">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl text-gray-200 font-bold mb-6 leading-tight">
                 Graduate Showcase
               </h1>
               <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
@@ -59,7 +59,7 @@ const IndexPage = () => {
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
                 <div className="bg-white rounded-lg p-4 mb-4">
                   <div className="h-32 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center relative overflow-hidden">
-                    <GraduationCap className="w-12 h-12 text-blue-600 z-10" />
+                    <GraduationCap className="w-12 h-12 z-10 text-[#354866]" />
                     {/* Background pattern */}
                     <div className="absolute inset-0 opacity-20">
                       <div className="absolute top-2 left-2 w-4 h-4 bg-blue-300 rounded-full"></div>

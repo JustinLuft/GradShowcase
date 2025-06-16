@@ -38,12 +38,18 @@ const RegistrationPage: React.FC = () => {
         });
       }
 
-      setMessage('Registration successful! Welcome to the Carolina Graduate Showcase!');
+      setMessage('Registration successful!');
       setFirstName('');
       setLastName('');
       setEmail('');
       setPassword('');
       setToken('');
+
+      // Navigate to login page after a brief delay
+      setTimeout(() => {
+        window.location.href = '/CreateProfilePage';
+      }, 1000);
+      
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
         setMessage('Email is already registered.');

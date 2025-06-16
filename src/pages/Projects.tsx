@@ -152,7 +152,7 @@ const ProjectsPage = () => {
           }}
         ></div>
         
-        <div className="relative container max-w-6xl mx-auto px-4 py-20">
+        <div className="relative container max-w-6xl mx-auto my-5 px-4 py-20">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
               Student Projects
