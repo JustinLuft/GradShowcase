@@ -131,9 +131,7 @@ const BrowseGraduatesPage = () => {
       { keywords: ['frontend', 'front-end'], title: 'Frontend Developer' },
       { keywords: ['backend', 'back-end'], title: 'Backend Developer' },
       { keywords: ['fullstack', 'full-stack'], title: 'Full Stack Developer' },
-      { keywords: ['mobile', 'ios', 'android'], title: 'Mobile Developer' },
       { keywords: ['data', 'analyst'], title: 'Data Analyst' },
-      { keywords: ['devops', 'cloud'], title: 'DevOps Engineer' },
       { keywords: ['ui', 'ux', 'design'], title: 'UI/UX Designer' }
     ];
     
