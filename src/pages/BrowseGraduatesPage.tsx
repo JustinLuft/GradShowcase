@@ -220,7 +220,7 @@ const BrowseGraduatesPage = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           <div className="w-72 flex-shrink-0">
-            <div className="bg-slate-800 rounded-lg p-6 shadow-lg sticky top-8">
+            <div className="bg-darkBlue rounded-lg p-6 shadow-lg sticky top-8">
               <h2 className="text-xl font-bold mb-6 text-white">Filters</h2>
               
               <div className="mb-6">
@@ -228,7 +228,7 @@ const BrowseGraduatesPage = () => {
                 <input
                   type="text" placeholder="Name, role, location, skills..."
                   value={filters.search}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onChange={(e) => updateFilter('search', e.target.value)}
                 />
               </div>
@@ -255,7 +255,7 @@ const BrowseGraduatesPage = () => {
                 <div key={key} className="mb-6">
                   <label className="block text-sm font-medium text-gray-300 mb-2">{label}</label>
                   <select value={filters[key as keyof FilterOptions] as string}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-slate-600 rounded-lg text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={(e) => updateFilter(key as keyof FilterOptions, e.target.value)}>
                     <option value="">All {label}s</option>
                     {options.map(option => <option key={option} value={option}>{option}</option>)}
@@ -272,26 +272,26 @@ const BrowseGraduatesPage = () => {
 
           <div className="flex-1">
             <div className="mb-6">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Graduate Directory</h1>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Graduate Directory</h1>
               <p className="text-gray-600">Showing {filteredGraduates.length} of {graduates.length} verified graduates</p>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredGraduates.map(g => (
-                <div key={g.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div key={g.id} className="bg-darkBlue rounded-lg shadow-md hover:shadow-lg transition-shadow">
                   <div className="aspect-square p-6 flex flex-col items-center justify-center text-center">
                     <img src={g.profileImage || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf'} 
-                      alt={g.name} className="w-20 h-20 rounded-full bg-gray-300 mb-4 object-cover"
+                      alt={g.name} className="w-20 h-20 border-2 border-white rounded-full bg-gray-300 mb-4 object-cover"
                       onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf'} />
-                    <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">{g.name}</h3>
-                    <p className="text-gray-600 text-sm mb-2 line-clamp-1">{g.role}</p>
-                    <p className="text-gray-500 text-xs mb-3 line-clamp-1">{g.location}</p>
+                    <h3 className="font-bold text-lg text-white mb-1 line-clamp-1">{g.name}</h3>
+                    <p className="text-white text-sm mb-2 line-clamp-1">{g.role}</p>
+                    <p className="text-white text-xs mb-3 line-clamp-1">{g.location}</p>
                   </div>
                   
                   <div className="px-4 pb-3">
                     <div className="flex flex-wrap gap-1 justify-center">
                       {g.skillTags.slice(0, 3).map((skill, i) => (
-                        <span key={i} className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">{skill}</span>
+                        <span key={i} className="bg-mediumBlue text-white text-xs px-2 py-1 rounded-full">{skill}</span>
                       ))}
                       {g.skillTags.length > 3 && (
                         <span className="bg-gray-400 text-white text-xs px-2 py-1 rounded-full">+{g.skillTags.length - 3}</span>
@@ -305,21 +305,21 @@ const BrowseGraduatesPage = () => {
                         { url: g.github, d: "M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z", color: "gray-900" },
                         { url: g.linkedin, d: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z", color: "blue-600" }
                       ].map(({ url, d, color }, i) => url && (
-                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" className={`text-gray-600 hover:text-${color}`}>
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" className={`text-white hover:text-${color}`}>
                           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d={d}/></svg>
                         </a>
                       ))}
                       {g.website && (
-                        <a href={g.website} target="_blank" className="text-gray-600 hover:text-green-600">
+                        <a href={g.website} target="_blank" className="text-white hover:text-green-600">
                           <Globe className="w-5 h-5" />
                         </a>
                       )}
-                      <a href={`mailto:${g.email}`} className="text-gray-600 hover:text-red-600">
+                      <a href={`mailto:${g.email}`} className="text-white hover:text-red-600">
                         <Mail className="w-5 h-5" />
                       </a>
                     </div>
                     <button onClick={() => setSelectedGraduate(g)}
-                      className="w-full bg-pink-400 hover:bg-pink-500 text-white font-medium py-2 px-4 rounded-lg">
+                      className="w-full bg-hotPink hover:bg-hotPinkHover text-white font-medium py-2 px-4 rounded-lg">
                       View Profile
                     </button>
                   </div>
