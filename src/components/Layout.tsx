@@ -54,28 +54,23 @@ const Layout = () => {
   return (
     <div className="relative min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b backdrop-blur-sm bg-white/95">
+      <header className="sticky top-0 z-50 shadow-sm border-b backdrop-blur-sm bg-lightBlue/95">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <div className="flex items-center">
-              <Link to="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-pink-600 rounded flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">BC</span>
-                </div>
-                <span className="font-bold text-xl text-gray-900">Build Carolina Graduate Showcase</span>
-              </Link>
+            <div className="w-15 h-8 flex items-center justify-center">
+              <a href="/"><img src="src/logotype_horizontal_full_color_resized.png"></img></a>
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-12">
-              <Link to="/graduates" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link to="/graduates" className="text-darkBlue hover:text-blue-600 font-medium">
                 Graduates
               </Link>
-              <Link to="/projects" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link to="/projects" className="text-darkBlue hover:text-blue-600 font-medium">
                 Projects
               </Link>
-              <Link to="/success" className="text-gray-700 hover:text-blue-600 font-medium">
+              <Link to="/success" className="text-darkBlue hover:text-blue-600 font-medium">
                 Success Stories
               </Link>
 

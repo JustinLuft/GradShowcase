@@ -18,85 +18,45 @@ const IndexPage = () => {
   
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-gray-900 to-gray-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23374151" width="1200" height="600"/><g opacity="0.8"><circle cx="300" cy="200" r="100" fill="%234B5563"/><circle cx="800" cy="350" r="120" fill="%234B5563"/><circle cx="1000" cy="150" r="80" fill="%234B5563"/></g></svg>')`
-          }}
-        ></div>
+      <section className="relative text-white overflow-hidden h-[500px] md:h-[600px] flex items-center justify-center">
+      {/* Background Image Div */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url('/src/showcaseHero.jpg')`, // <-- IMPORTANT: Verify this path
+        }}
+      >
+        {/* Overlay to darken image for better text readability */}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+      </div>
         
-        <div className="relative container max-w-6xl mx-auto mt-5 mb-5 px-4 py-20">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl text-gray-200 font-bold mb-6 leading-tight">
-                Graduate Showcase
-              </h1>
-              <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
-                Build Carolina envisions a thriving, accessible tech ecosystem in South Carolina. The Graduate Showcase portal offers a bridge between employers and graduates, to connect and find opportunities.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                {isLoggedIn && (
-                  <button 
-                    onClick={() => window.location.href = '/create-profile'}
-                    className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-full font-semibold transition-colors"
-                  >
-                    Manage Profile
-                  </button>
-                )}
-                <button
-                  onClick={() => window.location.href = '/graduates'}
-                  className="border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white px-8 py-3 rounded-full font-semibold transition-colors"
-                >
-                  Browse Graduates
-                </button>
-              </div>
-            </div>
-            
-            {/* Mockup image area */}
-            <div className="relative">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <div className="bg-white rounded-lg p-4 mb-4">
-                  <div className="h-32 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg flex items-center justify-center relative overflow-hidden">
-                    <GraduationCap className="w-12 h-12 z-10 text-[#354866]" />
-                    {/* Background pattern */}
-                    <div className="absolute inset-0 opacity-20">
-                      <div className="absolute top-2 left-2 w-4 h-4 bg-blue-300 rounded-full"></div>
-                      <div className="absolute top-6 right-4 w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <div className="absolute bottom-4 left-6 w-3 h-3 bg-blue-300 rounded-full"></div>
-                      <div className="absolute bottom-2 right-2 w-2 h-2 bg-blue-400 rounded-full"></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="h-3 bg-white/60 rounded-full w-3/4 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
-                  </div>
-                  <div className="h-3 bg-white/40 rounded-full w-1/2 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer animation-delay-200"></div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <div className="h-6 bg-pink-200 rounded-full w-16 flex items-center justify-center">
-                      <span className="text-xs text-pink-700 font-medium">React</span>
-                    </div>
-                    <div className="h-6 bg-blue-200 rounded-full w-16 flex items-center justify-center">
-                      <span className="text-xs text-blue-700 font-medium">Node</span>
-                    </div>
-                    <div className="h-6 bg-green-200 rounded-full w-16 flex items-center justify-center">
-                      <span className="text-xs text-green-700 font-medium">Python</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating elements for visual interest */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-pink-500/20 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-blue-500/20 rounded-full blur-lg"></div>
-            </div>
-          </div>
+        {/* Content Container */}
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+          Graduate Showcase
+        </h1>
+        <p className="text-lg sm:text-xl mb-8 text-white leading-relaxed">
+          Build Carolina envisions a thriving, accessible tech talent ecosystem in South Carolina. The Graduate Showcase portal offers a bridge between employers and graduates, to connect and find opportunities.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {isLoggedIn && (
+            <button
+              onClick={() => (window.location.href = '/create-profile')}
+              className="border-2 border-hotPink text-hotPink hover:bg-hotPinkHover hover:text-white hover:border-hotPinkHover px-8 py-3 rounded-full font-semibold transition-colors"
+            >
+              Manage Profile
+            </button>
+          )}
+          <button
+            onClick={() => (window.location.href = '/graduates')}
+            className="bg-hotPink hover:bg-hotPinkHover text-white px-8 py-3 rounded-full font-semibold transition-colors"
+          >
+            Browse Graduates
+          </button>
         </div>
-      </section>
+      </div>
+    </section>
 
   
 
@@ -106,51 +66,51 @@ const IndexPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="border-2 border-gray-100 bg-white rounded-lg shadow-sm group transition-colors custom-hover-border">
               <div className="p-8 text-center">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#A3B5C1' }}>
-                  <Code className="w-8 h-8 text-[#354866]" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#E93679' }}>
+                  <Code className="w-8 h-8 text-[#ffffff]" />
                 </div>
                 <h3 className="text-xl font-bold mb-4">Showcase Your Skills</h3>
-                <p className="text-gray-600 mb-4">
-                  You're more than a GPA. Build a compelling profile with projects, portfolios, and certifications to show employers what makes you stand out.
+                <p className="text-darkBlue-600 mb-4">
+                  <b>You're more than a GPA.</b> Build a compelling profile with projects, portfolios, and certifications to show employers what makes you stand out.
                 </p>
-                <div className="flex justify-center space-x-2 opacity-60">
-                  <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <div className="flex justify-center space-x-2 opacity-80">
+                  <div className="w-2 h-2 bg-mediumBlue rounded-full"></div>
+                  <div className="w-2 h-2 bg-hotPink rounded-full"></div>
+                  <div className="w-2 h-2 bg-darkBlue rounded-full"></div>
                 </div>
               </div>
             </div>
 
             <div className="border-2 border-gray-100 bg-white rounded-lg shadow-sm group transition-colors custom-hover-border">
               <div className="p-8 text-center">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#A3B5C1' }}>
-                  <Search className="w-8 h-8 text-[#354866]" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#E93679' }}>
+                  <Search className="w-8 h-8 text-[#ffffff]" />
                 </div>
                 <h3 className="text-xl font-bold mb-4">Get Discovered</h3>
-                <p className="text-gray-600 mb-4">
-                  Put your name out there. Join our talent directory to gain visibility with local companies looking to hire local graduates with your unique talents.
+                <p className="text-darkBlue-600 mb-4">
+                  <b>Put your name out there.</b> Join our talent directory to gain visibility with local companies looking to hire local graduates with your unique talents.
                 </p>
-                <div className="flex justify-center space-x-2 opacity-60">
-                  <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <div className="flex justify-center space-x-2 opacity-80">
+                  <div className="w-2 h-2 bg-mediumBlue rounded-full"></div>
+                  <div className="w-2 h-2 bg-hotPink rounded-full"></div>
+                  <div className="w-2 h-2 bg-darkBlue rounded-full"></div>
                 </div>
               </div>
             </div>
 
             <div className="border-2 border-gray-100 bg-white rounded-lg shadow-sm group transition-colors custom-hover-border">
               <div className="p-8 text-center">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#A3B5C1' }}>
-                  <Building className="w-8 h-8 text-[#354866]" />
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors group custom-hover-bg" style={{ backgroundColor: '#E93679' }}>
+                  <Building className="w-8 h-8 text-[#ffffff]" />
                 </div>
                 <h3 className="text-xl font-bold mb-4">Connect with Local Talent</h3>
-                <p className="text-gray-600 mb-4">
-                  Find your perfect fit. Search our directory to find fresh talent based on your company's location, job needs, skill requirements, and culture fit — no more endless searching.
+                <p className="text-darkBlue-600 mb-4">
+                  <b>Find your perfect fit.</b> Search our directory to find fresh talent based on your company's location, job needs, skill requirements, and culture fit — no more endless searching.
                 </p>
-                <div className="flex justify-center space-x-2 opacity-60">
-                  <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <div className="flex justify-center space-x-2 opacity-80">
+                  <div className="w-2 h-2 bg-mediumBlue rounded-full"></div>
+                  <div className="w-2 h-2 bg-hotPink rounded-full"></div>
+                  <div className="w-2 h-2 bg-darkBlue rounded-full"></div>
                 </div>
               </div>
             </div>
@@ -163,7 +123,8 @@ const IndexPage = () => {
         <div className="container max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">Featured Graduates</h2>
-            <button className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-md font-medium flex items-center gap-2">
+            <button onClick={() => window.location.href = '/graduates'} 
+                    className="border border-gray-300 text-gray-700 hover:bg-gray-100 px-4 py-2 rounded-md font-medium flex items-center gap-2">
               View All <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -221,9 +182,9 @@ const IndexPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-100 py-12 px-4">
+      <footer className="bg-lightBlue py-12 px-4">
         <div className="container max-w-6xl mx-auto text-center">
-          <p className="text-gray-600 text-sm">
+          <p className="text-darkBlue text-sm">
             © 2025 Build Carolina Graduate Showcase. All rights reserved.
           </p>
         </div>

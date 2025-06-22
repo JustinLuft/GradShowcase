@@ -17,6 +17,13 @@ const config = {
     },
     extend: {
       colors: {
+        "lightBlue": "#DBF0F5",
+        "mediumBlue": "#4DC4DB",
+        "darkBlue": "#354866",
+        "hotPink": "#E93679",
+        "hotPinkHover": "#B22057",
+        "brightOrange": "#ED6439",
+        "mediumYellow": "#F2C34B",
         border: "#e2e8f0", // light gray border
         input: "#f8fafc",  // very light gray input background
         ring: "#2563eb",   // blue ring for focus
