@@ -20,19 +20,19 @@ const formatDate = (dateString?: string) =>
 const ProfileModal = ({ graduateData: g, onClose }: { graduateData: Graduate; onClose: () => void }) => (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-      <div className="relative bg-gradient-to-r from-pink-400 to-purple-400 text-white p-6 rounded-t-lg sticky top-0 z-10">
+      <div className="relative bg-gradient-to-r from-mediumBlue to-darkBlue text-white p-6 rounded-t-lg sticky top-0 z-10">
         <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-gray-200">
           <X size={24} />
         </button>
         <div className="flex items-center space-x-6">
           <img
             src={g.profileImage || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf'}
-            alt={g.name} className="w-24 h-24 rounded-full object-cover bg-white"
+            alt={g.name} className="w-40 h-40 border-white border-4 rounded-full object-cover bg-white"
             onError={(e) => e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf'}
           />
           <div>
-            <h1 className="text-3xl font-bold mb-2">{g.name}</h1>
-            <p className="text-3xl font-bold mb-2">{g.role}</p>
+            <h1 className="text-3xl text-white font-bold mb-2">{g.name}</h1>
+            <p className="text-2xl text-white font-bold mb-2">{g.role}</p>
             <div className="flex items-center space-x-2 text-sm opacity-80">
               <MapPin size={16} /><span>{g.location}</span><span className="mx-2">•</span>
               <Calendar size={16} /><span>Class of {g.graduationCohort}</span>
@@ -46,7 +46,7 @@ const ProfileModal = ({ graduateData: g, onClose }: { graduateData: Graduate; on
       <div className="p-6 space-y-8">
         <section>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-            <User className="mr-2 text-pink-600" size={20} />About
+            <User className="mr-2 text-pink-600" size={30} />About
           </h2>
           <div className="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-lg whitespace-pre-wrap break-words overflow-wrap-anywhere">
             {g.bio}
@@ -55,11 +55,11 @@ const ProfileModal = ({ graduateData: g, onClose }: { graduateData: Graduate; on
 
         <section>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
-            <Code className="mr-2 text-pink-600" size={20} />Skills
+            <Code className="mr-2 text-pink-600" size={30} />Skills
           </h2>
           <div className="flex flex-wrap gap-2">
             {g.skillTags.map((skill, i) => (
-              <span key={i} className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm font-medium">
+              <span key={i} className="px-3 py-1 bg-mediumBlue text-white rounded-full text-sm font-medium">
                 {skill}
               </span>
             ))}
@@ -70,16 +70,16 @@ const ProfileModal = ({ graduateData: g, onClose }: { graduateData: Graduate; on
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Contact & Links</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { Icon: Mail, label: "Email", value: g.email, href: `mailto:${g.email}`, color: "text-red-500" },
-              ...(g.github ? [{ Icon: Github, label: "GitHub", value: "View Profile", href: g.github, color: "text-gray-800" }] : []),
-              ...(g.linkedin ? [{ Icon: Linkedin, label: "LinkedIn", value: "View Profile", href: g.linkedin, color: "text-pink-700" }] : []),
-              ...(g.website ? [{ Icon: Globe, label: "Website", value: "Visit Website", href: g.website, color: "text-green-600" }] : [])
+              { Icon: Mail, label: "Email", value: g.email, href: `mailto:${g.email}`, color: "text-brightOrange" },
+              ...(g.github ? [{ Icon: Github, label: "GitHub", value: "View Profile", href: g.github, color: "text-brightOrange" }] : []),
+              ...(g.linkedin ? [{ Icon: Linkedin, label: "LinkedIn", value: "View Profile", href: g.linkedin, color: "text-brightOrange" }] : []),
+              ...(g.website ? [{ Icon: Globe, label: "Website", value: "Visit Website", href: g.website, color: "text-brightOrange" }] : [])
             ].map(({ Icon, label, value, href, color }, i) => (
               <div key={i} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                 <Icon className={color} size={20} />
                 <div>
                   <p className="text-sm text-gray-500">{label}</p>
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="text-pink-600 hover:underline font-medium">
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="text-darkBlue hover:underline font-medium">
                     {value}
                   </a>
                 </div>
@@ -107,7 +107,7 @@ const ProfileModal = ({ graduateData: g, onClose }: { graduateData: Graduate; on
         </section>
       </div>
 
-              <div className="relative bg-gradient-to-r from-pink-400 to-purple-400 text-white p-6  sticky top-0 z-10">
+              <div className="relative bg-gradient-to-r from-mediumBlue to-darkBlue text-white p-6  sticky top-0 z-10">
 
           
         </div>
