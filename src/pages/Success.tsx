@@ -109,72 +109,44 @@ const Success = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-gray-900 to-gray-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-30"
-          style={{
-            backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23374151" width="1200" height="600"/><g opacity="0.8"><circle cx="300" cy="200" r="100" fill="%234B5563"/><circle cx="800" cy="350" r="120" fill="%234B5563"/><circle cx="1000" cy="150" r="80" fill="%234B5563"/></g></svg>')`
-          }}
-        ></div>
+      <section className="relative text-white overflow-hidden h-[500px] md:h-[600px] flex items-center justify-center">
+      {/* Background Image Div */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url('/src/successHero.JPG')`,
+        }}
+      >
+        {/* Overlay to darken image for better text readability */}
+        <div className="absolute inset-0 bg-black opacity-50"></div>
+      </div>
         
-        <div className="relative container max-w-6xl mx-auto px-4 py-20">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                Real Journeys, Real Results
-              </h1>
-              <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
-                Discover the inspiring journeys of graduates who found their dream careers and employers who discovered exceptional talent through Build Carolina. These are the authentic stories of connections that lead to lasting success.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={() => window.location.href = '/create-profile'}
-                  className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-full font-semibold transition-colors"
-                >
-                  Share Your Story
-                </button>
-                <button
-                  onClick={() => window.location.href = '/graduates'}
-                  className="border-2 border-pink-500 text-pink-500 hover:bg-pink-500 hover:text-white px-8 py-3 rounded-full font-semibold transition-colors"
-                >
-                  Find Talent
-                </button>
-              </div>
-            </div>
-            
-            {/* Hero Image Area */}
-            <div className="relative">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                <div className="bg-white rounded-lg p-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold">
-                      S
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-900">Success Story</h3>
-                      <p className="text-sm text-gray-500">Graduate → Career</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="h-2 bg-gradient-to-r from-pink-200 to-pink-400 rounded-full"></div>
-                    <div className="h-2 bg-gradient-to-r from-blue-200 to-blue-400 rounded-full w-4/5"></div>
-                    <div className="h-2 bg-gradient-to-r from-green-200 to-green-400 rounded-full w-3/5"></div>
-                  </div>
-                  <div className="mt-4 flex items-center gap-2 text-sm text-gray-600">
-                    <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span>92% Success Rate</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating elements */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-pink-500/20 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-blue-500/20 rounded-full blur-lg"></div>
-            </div>
-          </div>
+        {/* Content Container */}
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 leading-tight">
+          Real Journeys, Real Results
+        </h1>
+        <p className="text-lg sm:text-xl mb-8 text-white leading-relaxed">
+          Discover the inspiring journeys of graduates who found their dream careers and employers who discovered exceptional talent through Build Carolina. These are the authentic stories of connections that lead to lasting success.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => (window.location.href = '/create-profile')}
+              className="border-2 border-hotPink text-hotPink hover:bg-hotPinkHover hover:text-white hover:border-hotPinkHover px-8 py-3 rounded-full font-semibold transition-colors"
+            >
+              Share Your Story
+            </button>
+          
+          <button
+            onClick={() => (window.location.href = '/graduates')}
+            className="bg-hotPink hover:bg-hotPinkHover text-white px-8 py-3 rounded-full font-semibold transition-colors"
+          >
+            Find Talent
+          </button>
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* Success Stats */}
       <section className="py-16 px-4 bg-white">
