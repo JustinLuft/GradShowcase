@@ -23,7 +23,7 @@ const IndexPage = () => {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `url('/src/showcaseHero.jpg')`, // <-- IMPORTANT: Verify this path
+          backgroundImage: `url('/src/showcaseHero.jpg')`,
         }}
       >
         {/* Overlay to darken image for better text readability */}
