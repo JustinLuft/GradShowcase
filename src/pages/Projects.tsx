@@ -146,7 +146,7 @@ const ProjectsPage = () => {
     <div className="min-h-screen bg-gray-50">
        {/* Hero Section */}
       <section className="relative text-white overflow-hidden h-[500px] md:h-[600px] flex items-center justify-center">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/src/projectsHero.jpg')` }}>
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/images/projectsHero.jpg')` }}>
           <div className="absolute inset-0 bg-black opacity-50"></div>
         </div>
         

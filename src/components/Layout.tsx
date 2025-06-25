@@ -59,7 +59,7 @@ const Layout = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="w-15 h-8 flex items-center justify-center">
-              <a href="/"><img src="src/logotype_horizontal_full_color_resized.png"></img></a>
+              <a href="/"><img src="/images/logotype_horizontal_full_color_resized.png"></img></a>
             </div>
 
             {/* Desktop Navigation */}

@@ -114,7 +114,7 @@ const Success = () => {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: `url('/src/successHero.JPG')`,
+          backgroundImage: `url('/images/successHero.JPG')`,
         }}
       >
         {/* Overlay to darken image for better text readability */}
