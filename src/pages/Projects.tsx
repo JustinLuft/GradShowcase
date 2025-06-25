@@ -104,6 +104,8 @@ const ProjectsPage = () => {
     }
   ];
 
+  const navigate = (path: string) => window.location.href = path;
+
   const categories = ['all', 'Full Stack', 'Data Science', 'Mobile', 'AI/ML', 'Blockchain'];
 
   const filteredProjects = projects.filter(project => {
@@ -142,32 +144,27 @@ const ProjectsPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-gray-900 to-gray-700 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-black/40"></div>
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23374151" width="1200" height="600"/><g opacity="0.8"><circle cx="300" cy="200" r="100" fill="%234B5563"/><circle cx="800" cy="350" r="120" fill="%234B5563"/><circle cx="1000" cy="150" r="80" fill="%234B5563"/></g></svg>')`
-          }}
-        ></div>
+       {/* Hero Section */}
+      <section className="relative text-white overflow-hidden h-[500px] md:h-[600px] flex items-center justify-center">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url('/src/projectsHero.jpg')` }}>
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+        </div>
         
-        <div className="relative container max-w-6xl mx-auto my-5 px-4 py-20">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              Student Projects
-            </h1>
-            <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed max-w-3xl mx-auto">
-              Explore innovative projects built by South Carolina graduates. From full-stack applications to AI solutions, discover the creativity and technical skills of our local talent.
-            </p>
-            <div className="flex justify-center">
-              <button
-                onClick={() => window.location.href = '/graduates'}
-                className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-full font-semibold transition-colors flex items-center gap-2"
-              >
-                View Graduate Profiles <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl text-white md:text-6xl font-bold mb-4">
+            Student Projects
+          </h1>
+          <p className="text-lg text-white sm:text-xl mb-8">
+            Explore innovative projects built by South Carolina graduates. From full-stack applications to AI solutions, discover the creativity and technical skills of our local talent.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+	            <button
+              onClick={() => navigate('/graduates')}
+              className="bg-hotPink hover:bg-hotPinkHover text-white px-8 py-3 rounded-full font-semibold transition-colors"
+            >
+              Vew Graduate Profiles
+            </button>
           </div>
         </div>
       </section>
@@ -235,7 +232,7 @@ const ProjectsPage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="bg-pink-100 text-pink-700 px-2 py-1 rounded-full text-xs font-medium">
+                    <div className="bg-pink-100 text-pink-700 text-center px-2 py-1 flex rounded-full text-xs font-medium">
                       {project.category}
                     </div>
                   </div>
