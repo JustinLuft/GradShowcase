@@ -93,10 +93,10 @@ const IndexPage: React.FC = () => {
         </div>
         
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-4">
+          <h1 className="text-4xl sm:text-5xl text-white md:text-6xl font-bold mb-4">
             Graduate Showcase
           </h1>
-          <p className="text-lg sm:text-xl mb-8">
+          <p className="text-lg text-white sm:text-xl mb-8">
             Build Carolina envisions a thriving, accessible tech talent ecosystem in South Carolina. The Graduate Showcase portal offers a bridge between employers and graduates, to connect and find opportunities.
           </p>
 
