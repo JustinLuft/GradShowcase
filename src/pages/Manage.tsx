@@ -601,7 +601,7 @@ const Management: React.FC = () => {
         </div>
       </div>
 
-      {/* Profile Modal */}
+{/* Profile Modal */}
       {showProfileModal && selectedProfile && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
@@ -726,54 +726,56 @@ const Management: React.FC = () => {
                     )}
                   </div>
 
-                  {!selectedProfile.isArchived && selectedProfile.status === 'pending' && (
-                    <div className="space-y-2">
+                  <div className="space-y-3">
+                    {!selectedProfile.isArchived && selectedProfile.status === 'pending' && (
+                      <>
+                        <button
+                          onClick={() => {
+                            handleApprove(selectedProfile.id);
+                            setShowProfileModal(false);
+                          }}
+                          disabled={actionLoading === selectedProfile.id}
+                          className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:opacity-50"
+                        >
+                          Approve Profile
+                        </button>
+                        <button
+                          onClick={() => {
+                            handleReject(selectedProfile.id);
+                            setShowProfileModal(false);
+                          }}
+                          disabled={actionLoading === selectedProfile.id}
+                          className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50"
+                        >
+                          Reject Profile
+                        </button>
+                      </>
+                    )}
+
+                    {selectedProfile.isArchived ? (
                       <button
                         onClick={() => {
-                          handleApprove(selectedProfile.id);
+                          handleUnarchive(selectedProfile.id);
                           setShowProfileModal(false);
                         }}
                         disabled={actionLoading === selectedProfile.id}
                         className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:opacity-50"
                       >
-                        Approve Profile
+                        Unarchive Profile
                       </button>
+                    ) : (
                       <button
                         onClick={() => {
-                          handleReject(selectedProfile.id);
+                          handleArchive(selectedProfile.id);
                           setShowProfileModal(false);
                         }}
                         disabled={actionLoading === selectedProfile.id}
-                        className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium disabled:opacity-50"
+                        className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium disabled:opacity-50"
                       >
-                        Reject Profile
+                        Archive Profile
                       </button>
-                    </div>
-                  )}
-
-                  {selectedProfile.isArchived ? (
-                    <button
-                      onClick={() => {
-                        handleUnarchive(selectedProfile.id);
-                        setShowProfileModal(false);
-                      }}
-                      disabled={actionLoading === selectedProfile.id}
-                      className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:opacity-50"
-                    >
-                      Unarchive Profile
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        handleArchive(selectedProfile.id);
-                        setShowProfileModal(false);
-                      }}
-                      disabled={actionLoading === selectedProfile.id}
-                      className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium disabled:opacity-50"
-                    >
-                      Archive Profile
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
