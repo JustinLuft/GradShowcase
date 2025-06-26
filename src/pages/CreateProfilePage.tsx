@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db } from '@/firebase/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, query, where, getDocs, doc, updateDoc, setDoc } from 'firebase/firestore';
 import { auth } from '@/firebase/firebase';
-import { User, MapPin, Mail, Github, Linkedin, Globe, Code, Calendar, Camera, CheckCircle, AlertCircle } from 'lucide-react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { User, MapPin, Mail, Github, Linkedin, Globe, Code, Calendar, Camera, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface ProfileData {
   name: string;
@@ -18,12 +19,12 @@ interface ProfileData {
   skillTags: string[];
 }
 
-const CreateProfilePage: React.FC = () => {
+const ManageProfilePage: React.FC = () => {
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
     bio: '',
     location: '',
-    email: auth.currentUser?.email || '',
+    email: '',
     linkedin: '',
     github: '',
     website: '',
@@ -37,6 +38,11 @@ const CreateProfilePage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
+  const [existingProfileId, setExistingProfileId] = useState<string | null>(null);
+  const [profileStatus, setProfileStatus] = useState<string>('');
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   const suggestedSkills = [
     'React', 'Vue', 'Angular', 'JavaScript', 'TypeScript', 'Node.js', 'Python', 'Java', 'C++', 'C#', 
@@ -45,7 +51,6 @@ const CreateProfilePage: React.FC = () => {
     'Flask', 'Spring Boot', 'Laravel', 'Rails', 'Git', 'Linux', 'DevOps', 'CI/CD', 'Jest', 'Cypress'
   ];
 
-  // Can update to include any other roles
   const roleOptions = [
     'Frontend Developer',
     'Backend Developer', 
@@ -57,6 +62,103 @@ const CreateProfilePage: React.FC = () => {
   const cohortOptions = [
     '2025', '2024', '2023', '2022', '2021', '2020', '2019', '2018'
   ];
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthLoading(false);
+      if (user) {
+        setFormData(prev => ({ ...prev, email: user.email || '' }));
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Load existing profile data when user is authenticated
+  useEffect(() => {
+    const loadExistingProfile = async () => {
+      if (authLoading || !currentUser) {
+        setIsLoadingProfile(false);
+        return;
+      }
+
+      try {
+        setIsLoadingProfile(true);
+        console.log('Loading profile for user:', currentUser.uid);
+        
+        const q = query(
+          collection(db, 'graduates'), 
+          where('userId', '==', currentUser.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        
+        console.log('Query results:', querySnapshot.size, 'documents found');
+        
+        if (!querySnapshot.empty) {
+          const profileDoc = querySnapshot.docs[0];
+          const profileData = profileDoc.data();
+          
+          console.log('Found existing profile:', profileData);
+          
+          // Pre-fill form with existing data
+          setFormData({
+            name: profileData.name || '',
+            bio: profileData.bio || '',
+            location: profileData.location || '',
+            email: profileData.email || currentUser.email || '',
+            linkedin: profileData.linkedin || '',
+            github: profileData.github || '',
+            website: profileData.website || '',
+            profileImage: profileData.profileImage || '',
+            role: profileData.role || '',
+            graduationCohort: profileData.graduationCohort || '',
+            skillTags: profileData.skillTags || []
+          });
+          
+          setExistingProfileId(profileDoc.id);
+          setProfileStatus(profileData.status || 'pending');
+          
+          if (profileData.isVerified) {
+            setMessage('Your profile is verified and live on the showcase!');
+            setIsSuccess(true);
+          } else if (profileData.status === 'pending') {
+            setMessage('Your profile is pending administrator approval.');
+          }
+        } else {
+          console.log('No existing profile found for user');
+          // Reset form for new profile
+          setFormData(prev => ({
+            name: '',
+            bio: '',
+            location: '',
+            email: currentUser.email || '',
+            linkedin: '',
+            github: '',
+            website: '',
+            profileImage: '',
+            role: '',
+            graduationCohort: '',
+            skillTags: []
+          }));
+          setExistingProfileId(null);
+          setProfileStatus('');
+          setMessage('');
+          setIsSuccess(false);
+        }
+      } catch (error) {
+        console.error('Error loading existing profile:', error);
+        setMessage('Error loading existing profile data.');
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    };
+
+    if (!authLoading) {
+      loadExistingProfile();
+    }
+  }, [currentUser, authLoading]);
 
   const handleInputChange = (field: keyof ProfileData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -88,10 +190,32 @@ const CreateProfilePage: React.FC = () => {
     }
   };
 
+  const checkForExistingProfile = async (userId: string) => {
+    try {
+      const q = query(
+        collection(db, 'graduates'), 
+        where('userId', '==', userId)
+      );
+      const querySnapshot = await getDocs(q);
+      return !querySnapshot.empty ? querySnapshot.docs[0] : null;
+    } catch (error) {
+      console.error('Error checking for existing profile:', error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
+    setIsSuccess(false);
+
+    // Check authentication
+    if (!currentUser) {
+      setMessage('You must be logged in to submit a profile.');
+      setIsLoading(false);
+      return;
+    }
 
     // Validation
     if (!formData.name.trim() || !formData.bio.trim() || !formData.location.trim() || 
@@ -102,41 +226,60 @@ const CreateProfilePage: React.FC = () => {
     }
 
     try {
+      // Double-check for existing profile before creating
+      const existingProfile = await checkForExistingProfile(currentUser.uid);
+      
       const profileData = {
         ...formData,
         name: formData.name.trim(),
         bio: formData.bio.trim(),
         location: formData.location.trim(),
-        isVerified: false, // Admin will verify
-        status: 'pending', // Add status field for admin review
-        createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        userId: auth.currentUser?.uid || ''
+        userId: currentUser.uid
       };
 
-      await addDoc(collection(db, 'graduates'), profileData);
+      if (existingProfile || existingProfileId) {
+        // Update existing profile - preserve all existing status/verification
+        const profileId = existingProfileId || (existingProfile ? existingProfile.id : null);
+        if (!profileId) {
+          setMessage('Could not determine profile ID for update.');
+          setIsLoading(false);
+          return;
+        }
+        await updateDoc(doc(db, 'graduates', profileId), profileData);
+        
+        setExistingProfileId(profileId);
+        setMessage('Profile updated successfully! Your changes have been saved.');
+      } else {
+        // Create new profile with a predictable document ID to prevent duplicates
+        const newProfileData = {
+          ...profileData,
+          isVerified: false,
+          status: 'pending',
+          createdAt: new Date().toISOString(),
+        };
+        
+        // Use the user's UID as the document ID to ensure uniqueness
+        const profileDocRef = doc(db, 'graduates', currentUser.uid);
+        await setDoc(profileDocRef, newProfileData);
+        
+        setExistingProfileId(currentUser.uid);
+        setMessage('Profile submitted successfully! Your submission has been sent to administrators for review.');
+        setProfileStatus('pending');
+      }
       
       setIsSuccess(true);
-      setMessage('Profile submitted successfully! Your submission has been sent to administrators for review. You will be notified once your profile is approved and published to the showcase.');
-      
-      // Reset form
-      setFormData({
-        name: '',
-        bio: '',
-        location: '',
-        email: auth.currentUser?.email || '',
-        linkedin: '',
-        github: '',
-        website: '',
-        profileImage: '',
-        role: '',
-        graduationCohort: '',
-        skillTags: []
-      });
       
     } catch (error: any) {
-      setMessage('Error submitting profile: ' + error.message);
       console.error('Error submitting profile:', error);
+      
+      if (error.code === 'permission-denied') {
+        setMessage('Permission denied. Please check your login status and try again.');
+      } else if (error.code === 'unauthenticated') {
+        setMessage('You must be logged in to submit a profile. Please log in and try again.');
+      } else {
+        setMessage('Error submitting profile: ' + error.message);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -149,20 +292,57 @@ const CreateProfilePage: React.FC = () => {
     }
   };
 
+  if (authLoading || isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <RefreshCw className="animate-spin mx-auto mb-4 text-pink-500" size={32} />
+          <p className="text-gray-600">
+            {authLoading ? 'Checking authentication...' : 'Loading your profile...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto mb-4 text-red-500" size={32} />
+          <p className="text-gray-600">You must be logged in to manage your profile.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-gradient-to-r from-pink-400 to-purple-400 text-white py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">Submit Your Profile</h1>
+            <h1 className="text-4xl font-bold mb-4">
+              {existingProfileId ? 'Manage Your Profile' : 'Submit Your Profile'}
+            </h1>
             <p className="text-xl opacity-90">
-              Apply to join the Carolina Graduate Showcase
+              {existingProfileId ? 'Update your information in the Carolina Graduate Showcase' : 'Apply to join the Carolina Graduate Showcase'}
             </p>
             <div className="mt-4 flex items-center justify-center text-sm opacity-80">
               <AlertCircle className="mr-2" size={16} />
               <span>All submissions are reviewed by administrators before publication</span>
             </div>
+            {profileStatus && (
+              <div className="mt-2">
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                  profileStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  profileStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                  'bg-gray-100 text-gray-800'
+                }`}>
+                  Status: {profileStatus.charAt(0).toUpperCase() + profileStatus.slice(1)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -438,8 +618,12 @@ const CreateProfilePage: React.FC = () => {
               <div className="flex items-start">
                 <AlertCircle className="mr-3 mt-0.5 text-blue-600 flex-shrink-0" size={20} />
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Review Process</p>
-                  <p>Your profile submission will be reviewed by administrators before being published to the showcase. This helps ensure quality and appropriate content for all visitors.</p>
+                  <p>
+                    {existingProfileId 
+                      ? 'By Submitting your profile, you agree to follow our community guidelines.'
+                      : 'Your profile submission will be reviewed by administrators before being published to the showcase.'
+                    }
+                  </p>
                 </div>
               </div>
             </div>
@@ -453,7 +637,10 @@ const CreateProfilePage: React.FC = () => {
                   : 'bg-gradient-to-r from-pink-400 to-purple-400 hover:from-pink-500 hover:to-purple-500 text-white'
               }`}
             >
-              {isLoading ? 'Submitting for Approval...' : 'Submit for Approval'}
+              {isLoading 
+                ? (existingProfileId ? 'Updating Profile...' : 'Submitting for Approval...') 
+                : (existingProfileId ? 'Update Profile' : 'Submit for Approval')
+              }
             </button>
 
             {message && (
@@ -482,4 +669,4 @@ const CreateProfilePage: React.FC = () => {
   );
 };
 
-export default CreateProfilePage;
+export default ManageProfilePage;
