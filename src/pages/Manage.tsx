@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '@/firebase/firebase';
-import { collection, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, query, orderBy, where } from 'firebase/firestore';
 import { 
   Users, 
   Clock, 
@@ -16,7 +16,7 @@ import {
   Github,
   Linkedin,
   Globe,
-  Trash2,
+  Archive,
   AlertTriangle,
   User,
   Code
@@ -37,8 +37,10 @@ interface GraduateProfile {
   skillTags: string[];
   status: 'pending' | 'approved' | 'rejected';
   isVerified: boolean;
+  isArchived?: boolean; // Add archive flag
   createdAt: string;
   updatedAt: string;
+  archivedAt?: string; // Add archive timestamp
   userId: string;
 }
 
@@ -51,6 +53,7 @@ const Management: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [cohortFilter, setCohortFilter] = useState<string>('all');
+  const [showArchived, setShowArchived] = useState(false); // Toggle for archived profiles
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [message, setMessage] = useState('');
 
@@ -59,12 +62,13 @@ const Management: React.FC = () => {
     total: 0,
     pending: 0,
     approved: 0,
-    rejected: 0
+    rejected: 0,
+    archived: 0
   });
 
   useEffect(() => {
     fetchProfiles();
-  }, []);
+  }, [showArchived]);
 
   useEffect(() => {
     applyFilters();
@@ -74,22 +78,40 @@ const Management: React.FC = () => {
     try {
       setLoading(true);
       const profilesRef = collection(db, 'graduates');
-      const q = query(profilesRef, orderBy('createdAt', 'desc'));
-      const querySnapshot = await getDocs(q);
       
-      const profilesData = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as GraduateProfile[];
+      // Fetch all profiles first, then filter in memory
+      // This helps debug if profiles are missing due to query issues
+      const querySnapshot = await getDocs(profilesRef);
+      
+      console.log('Total documents in collection:', querySnapshot.docs.length);
+      
+      const allProfilesData = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('Profile data:', { id: doc.id, ...data });
+        return {
+          id: doc.id,
+          ...data,
+          isArchived: data.isArchived || false // Default to false if not set
+        };
+      }) as GraduateProfile[];
+
+      // Filter based on archive status
+      const profilesData = showArchived 
+        ? allProfilesData.filter(p => p.isArchived === true)
+        : allProfilesData.filter(p => p.isArchived !== true);
+
+      // Sort by creation date (newest first)
+      profilesData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       setProfiles(profilesData);
       
-      // Calculate stats
+      // Calculate stats from all profiles (not just filtered)
       const newStats = {
-        total: profilesData.length,
-        pending: profilesData.filter(p => p.status === 'pending').length,
-        approved: profilesData.filter(p => p.status === 'approved').length,
-        rejected: profilesData.filter(p => p.status === 'rejected').length
+        total: allProfilesData.filter(p => !p.isArchived).length,
+        pending: allProfilesData.filter(p => p.status === 'pending' && !p.isArchived).length,
+        approved: allProfilesData.filter(p => p.status === 'approved' && !p.isArchived).length,
+        rejected: allProfilesData.filter(p => p.status === 'rejected' && !p.isArchived).length,
+        archived: allProfilesData.filter(p => p.isArchived === true).length
       };
       setStats(newStats);
       
@@ -107,11 +129,11 @@ const Management: React.FC = () => {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(profile => 
-        profile.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        profile.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        profile.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        profile.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        profile.skillTags.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
+        profile.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.role?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        profile.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (profile.skillTags && profile.skillTags.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase())))
       );
     }
 
@@ -179,21 +201,55 @@ const Management: React.FC = () => {
     }
   };
 
-  const handleDelete = async (profileId: string) => {
-    if (!window.confirm('Are you sure you want to permanently delete this profile? This action cannot be undone.')) {
+  const handleArchive = async (profileId: string) => {
+    if (!window.confirm('Are you sure you want to archive this profile? It will be moved to the archive section.')) {
       return;
     }
 
     try {
       setActionLoading(profileId);
-      await deleteDoc(doc(db, 'graduates', profileId));
+      const profileRef = doc(db, 'graduates', profileId);
+      await updateDoc(profileRef, {
+        isArchived: true,
+        archivedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
       
+      // Remove from current view
       setProfiles(prev => prev.filter(p => p.id !== profileId));
-      setMessage('Profile deleted successfully');
+      setMessage('Profile archived successfully');
       setTimeout(() => setMessage(''), 3000);
+      
+      // Refresh stats
+      fetchProfiles();
     } catch (error) {
-      console.error('Error deleting profile:', error);
-      setMessage('Error deleting profile');
+      console.error('Error archiving profile:', error);
+      setMessage('Error archiving profile');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleUnarchive = async (profileId: string) => {
+    try {
+      setActionLoading(profileId);
+      const profileRef = doc(db, 'graduates', profileId);
+      await updateDoc(profileRef, {
+        isArchived: false,
+        archivedAt: null,
+        updatedAt: new Date().toISOString()
+      });
+      
+      // Remove from archive view
+      setProfiles(prev => prev.filter(p => p.id !== profileId));
+      setMessage('Profile unarchived successfully');
+      setTimeout(() => setMessage(''), 3000);
+      
+      // Refresh stats
+      fetchProfiles();
+    } catch (error) {
+      console.error('Error unarchiving profile:', error);
+      setMessage('Error unarchiving profile');
     } finally {
       setActionLoading(null);
     }
@@ -217,7 +273,7 @@ const Management: React.FC = () => {
     }
   };
 
-  const uniqueCohorts = [...new Set(profiles.map(p => p.graduationCohort))].sort().reverse();
+  const uniqueCohorts = [...new Set(profiles.map(p => p.graduationCohort).filter(Boolean))].sort().reverse();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -226,13 +282,36 @@ const Management: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600 mt-1">Manage graduate profile submissions and approvals</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {showArchived ? 'Archived Profiles' : 'Admin Dashboard'}
+              </h1>
+              <p className="text-gray-600 mt-1">
+                {showArchived 
+                  ? 'View and manage archived graduate profiles'
+                  : 'Manage graduate profile submissions and approvals'
+                }
+              </p>
             </div>
-            <div className="flex items-center space-x-2">
-              <Users className="text-pink-600" size={24} />
-              <span className="text-2xl font-bold text-gray-900">{stats.total}</span>
-              <span className="text-gray-500">Total Profiles</span>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowArchived(!showArchived)}
+                className={`px-4 py-2 rounded-lg font-medium ${
+                  showArchived 
+                    ? 'bg-gray-600 hover:bg-gray-700 text-white' 
+                    : 'bg-pink-600 hover:bg-pink-700 text-white'
+                }`}
+              >
+                {showArchived ? 'View Active Profiles' : 'View Archived'}
+              </button>
+              <div className="flex items-center space-x-2">
+                <Users className="text-pink-600" size={24} />
+                <span className="text-2xl font-bold text-gray-900">
+                  {showArchived ? stats.archived : stats.total}
+                </span>
+                <span className="text-gray-500">
+                  {showArchived ? 'Archived' : 'Total'} Profiles
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -240,54 +319,76 @@ const Management: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-yellow-100 rounded-lg">
-                <Clock className="text-yellow-600" size={24} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Pending Review</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
+        {!showArchived && (
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-yellow-100 rounded-lg">
+                  <Clock className="text-yellow-600" size={24} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Pending Review</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <CheckCircle className="text-green-600" size={24} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Approved</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.approved}</p>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-green-100 rounded-lg">
+                  <CheckCircle className="text-green-600" size={24} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Approved</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.approved}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-red-100 rounded-lg">
-                <XCircle className="text-red-600" size={24} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Rejected</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.rejected}</p>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-red-100 rounded-lg">
+                  <XCircle className="text-red-600" size={24} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Rejected</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.rejected}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Users className="text-blue-600" size={24} />
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-blue-100 rounded-lg">
+                  <Users className="text-blue-600" size={24} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Total Profiles</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                </div>
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Profiles</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center">
+                <div className="p-3 bg-gray-100 rounded-lg">
+                  <Archive className="text-gray-600" size={24} />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Archived</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.archived}</p>
+                </div>
               </div>
             </div>
           </div>
+        )}
+
+        {/* Debug Info */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-yellow-800 text-sm">
+            Debug: Showing {filteredProfiles.length} of {profiles.length} profiles 
+            {showArchived ? ' (archived)' : ' (active)'}
+          </p>
         </div>
 
         {/* Filters */}
@@ -304,16 +405,18 @@ const Management: React.FC = () => {
               />
             </div>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
+            {!showArchived && (
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              >
+                <option value="all">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            )}
 
             <select
               value={cohortFilter}
@@ -355,11 +458,13 @@ const Management: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role & Cohort
                   </th>
+                  {!showArchived && (
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                  )}
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Submitted
+                    {showArchived ? 'Archived' : 'Submitted'}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -402,30 +507,35 @@ const Management: React.FC = () => {
                             </div>
                           </div>
                           <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{profile.name}</div>
+                            <div className="text-sm font-medium text-gray-900">{profile.name || 'No name'}</div>
                             <div className="text-sm text-gray-500 flex items-center">
                               <Mail size={12} className="mr-1" />
-                              {profile.email}
+                              {profile.email || 'No email'}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{profile.role}</div>
-                        <div className="text-sm text-gray-500">Class of {profile.graduationCohort}</div>
+                        <div className="text-sm text-gray-900">{profile.role || 'No role'}</div>
+                        <div className="text-sm text-gray-500">Class of {profile.graduationCohort || 'Unknown'}</div>
                         <div className="text-sm text-gray-500 flex items-center mt-1">
                           <MapPin size={12} className="mr-1" />
-                          {profile.location}
+                          {profile.location || 'No location'}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(profile.status)}`}>
-                          {getStatusIcon(profile.status)}
-                          <span className="ml-1 capitalize">{profile.status}</span>
-                        </span>
-                      </td>
+                      {!showArchived && (
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(profile.status)}`}>
+                            {getStatusIcon(profile.status)}
+                            <span className="ml-1 capitalize">{profile.status}</span>
+                          </span>
+                        </td>
+                      )}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(profile.createdAt).toLocaleDateString()}
+                        {showArchived && profile.archivedAt 
+                          ? new Date(profile.archivedAt).toLocaleDateString()
+                          : new Date(profile.createdAt).toLocaleDateString()
+                        }
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex items-center space-x-2">
@@ -440,7 +550,7 @@ const Management: React.FC = () => {
                             <Eye size={16} />
                           </button>
                           
-                          {profile.status === 'pending' && (
+                          {!showArchived && profile.status === 'pending' && (
                             <>
                               <button
                                 onClick={() => handleApprove(profile.id)}
@@ -461,14 +571,25 @@ const Management: React.FC = () => {
                             </>
                           )}
                           
-                          <button
-                            onClick={() => handleDelete(profile.id)}
-                            disabled={actionLoading === profile.id}
-                            className="text-red-600 hover:text-red-900 disabled:opacity-50"
-                            title="Delete"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {showArchived ? (
+                            <button
+                              onClick={() => handleUnarchive(profile.id)}
+                              disabled={actionLoading === profile.id}
+                              className="text-green-600 hover:text-green-900 disabled:opacity-50"
+                              title="Unarchive"
+                            >
+                              <Archive size={16} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleArchive(profile.id)}
+                              disabled={actionLoading === profile.id}
+                              className="text-orange-600 hover:text-orange-900 disabled:opacity-50"
+                              title="Archive"
+                            >
+                              <Archive size={16} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -527,7 +648,7 @@ const Management: React.FC = () => {
                   <div className="mb-6">
                     <h4 className="text-lg font-medium text-gray-900 mb-2">Skills</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedProfile.skillTags.map((skill, index) => (
+                      {(selectedProfile.skillTags || []).map((skill, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm"
@@ -587,15 +708,25 @@ const Management: React.FC = () => {
                       {getStatusIcon(selectedProfile.status)}
                       <span className="ml-1 capitalize">{selectedProfile.status}</span>
                     </span>
+                    {selectedProfile.isArchived && (
+                      <p className="text-xs text-red-600 mt-2 font-medium">
+                        This profile is archived
+                      </p>
+                    )}
                     <p className="text-xs text-gray-500 mt-2">
                       Submitted: {new Date(selectedProfile.createdAt).toLocaleString()}
                     </p>
                     <p className="text-xs text-gray-500">
                       Updated: {new Date(selectedProfile.updatedAt).toLocaleString()}
                     </p>
+                    {selectedProfile.archivedAt && (
+                      <p className="text-xs text-gray-500">
+                        Archived: {new Date(selectedProfile.archivedAt).toLocaleString()}
+                      </p>
+                    )}
                   </div>
 
-                  {selectedProfile.status === 'pending' && (
+                  {!selectedProfile.isArchived && selectedProfile.status === 'pending' && (
                     <div className="space-y-2">
                       <button
                         onClick={() => {
@@ -618,6 +749,30 @@ const Management: React.FC = () => {
                         Reject Profile
                       </button>
                     </div>
+                  )}
+
+                  {selectedProfile.isArchived ? (
+                    <button
+                      onClick={() => {
+                        handleUnarchive(selectedProfile.id);
+                        setShowProfileModal(false);
+                      }}
+                      disabled={actionLoading === selectedProfile.id}
+                      className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium disabled:opacity-50"
+                    >
+                      Unarchive Profile
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        handleArchive(selectedProfile.id);
+                        setShowProfileModal(false);
+                      }}
+                      disabled={actionLoading === selectedProfile.id}
+                      className="w-full px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium disabled:opacity-50"
+                    >
+                      Archive Profile
+                    </button>
                   )}
                 </div>
               </div>

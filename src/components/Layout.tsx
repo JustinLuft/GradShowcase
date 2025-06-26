@@ -38,6 +38,8 @@ const Layout = () => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      // Refresh page and redirect to homepage
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout failed:', error);
     }
