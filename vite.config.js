@@ -9,6 +9,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, 'src'),
     },
   },
+  // Explicitly specify public directory
+  publicDir: 'public',
   server: {
     port: 3000,
     open: true,
@@ -17,6 +19,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    // Ensure assets are copied properly
+    assetsDir: 'assets',
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -27,7 +31,6 @@ export default defineConfig({
       },
     },
     sourcemap: true,
-    // Uses default esbuild minification, no need to set minify
   },
   preview: {
     port: Number(process.env.PORT) || 3000,
