@@ -91,9 +91,7 @@ Or connect your GitHub repo to Vercel and push to trigger deployments automatica
 
 ## ✅ TODOs / Improvements
 
-- [ ] Add admin dashboard for uploading profiles  
-- [ ] Enable filtering by skills/interests  
-- [ ] Add backend database for profile management  
+- [ ] N/A
 
 ## 🤝 Contributing
 
