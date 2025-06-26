@@ -47,7 +47,7 @@ const RegistrationPage: React.FC = () => {
 
       // Navigate to login page after a brief delay
       setTimeout(() => {
-        window.location.href = '/CreateProfilePage';
+        window.location.href = '/create-profile';
       }, 1000);
       
     } catch (error: any) {
