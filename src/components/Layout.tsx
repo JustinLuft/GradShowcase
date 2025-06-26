@@ -61,18 +61,18 @@ const Layout = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="w-15 h-8 flex items-center justify-center">
-              <a href="/"><img src="/images/logotype_horizontal_full_color_resized.png"></img></a>
+              <a href="/" className="focus:outline-none"><img src="/images/logotype_horizontal_full_color_resized.png"></img></a>
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-12">
-              <Link to="/graduates" className="text-darkBlue hover:text-blue-600 font-medium">
+              <Link to="/graduates" className="focus:outline-none text-darkBlue hover:text-pink-600 hover:no-underline font-medium">
                 Graduates
               </Link>
-              <Link to="/projects" className="text-darkBlue hover:text-blue-600 font-medium">
+              <Link to="/projects" className="focus:outline-none text-darkBlue hover:text-pink-600 hover:no-underline font-medium">
                 Projects
               </Link>
-              <Link to="/success" className="text-darkBlue hover:text-blue-600 font-medium">
+              <Link to="/success" className="focus:outline-none text-darkBlue hover:text-pink-600 hover:no-underline font-medium">
                 Success Stories
               </Link>
 
