@@ -90,10 +90,6 @@ Or connect your GitHub repo to Vercel and push to trigger deployments automatica
 - For dynamic content, consider integrating Firebase or another headless CMS  
 - Update image assets inside `/public/images`  
 
-## ✅ TODOs / Improvements
-
-- [ ] N/A
-
 ## 🤝 Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you’d like to change.
@@ -110,4 +106,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-Made with 💻 by Justin, Chi, Sarah
+Made by Justin Luft, Chi Nguyen, and Sarah Criswell.
