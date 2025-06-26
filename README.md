@@ -1,6 +1,7 @@
 # 🎓 GradShowcase
 
 GradShowcase is a sleek, responsive web application for showcasing graduates and their portfolios. Built with modern tooling like Vite, Tailwind CSS, and TypeScript, this app helps connect job-ready talent with employers through a clean and intuitive interface.
+Check it out! https://grad-showcase.vercel.app/
 
 ## ✨ Features
 
