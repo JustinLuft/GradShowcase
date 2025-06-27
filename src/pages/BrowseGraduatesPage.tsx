@@ -303,7 +303,7 @@ const BrowseGraduatesPage = () => {
           <div className="flex-1">
             <div className="mb-6">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Graduate Directory</h1>
-              <p className="text-gray-600">Showing {filteredGraduates.length} of {graduates.length} approved graduates</p>
+              <p className="text-gray-600">Showing {filteredGraduates.length} of {graduates.length} verified graduates</p>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
