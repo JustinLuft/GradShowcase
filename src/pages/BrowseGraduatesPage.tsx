@@ -8,6 +8,8 @@ interface Graduate {
   linkedin: string; github: string; website?: string; profileImage?: string;
   role: string; graduationCohort: string; skillTags: string[];
   isVerified?: boolean; createdAt?: string; updatedAt?: string; verifiedAt?: string;
+  status?: 'pending' | 'approved' | 'rejected'; // Add status field
+  isArchived?: boolean; // Add archived field
 }
 
 interface FilterOptions {
@@ -144,13 +146,41 @@ const BrowseGraduatesPage = () => {
 
   const loadGraduates = async () => {
     try {
-      const q = query(collection(db, 'graduates'), where('isVerified', '==', true));
-      const snapshot = await getDocs(q);
-      const list = snapshot.docs.map(doc => {
-        const data = { id: doc.id, ...doc.data() } as Graduate;
+      // Get all graduates first
+      const allGraduatesSnapshot = await getDocs(collection(db, 'graduates'));
+      
+      console.log('Total documents in collection:', allGraduatesSnapshot.docs.length);
+      
+      const list = allGraduatesSnapshot.docs.map(doc => {
+        const data = doc.data();
+        console.log('Document data:', { id: doc.id, ...data });
+        return { id: doc.id, ...data } as Graduate;
+      })
+      .filter(graduate => {
+        // Only show approved, verified, and non-archived profiles
+        const isApproved = graduate.status === 'approved' || graduate.isVerified === true;
+        const isNotArchived = graduate.isArchived !== true;
+        const isNotRejected = graduate.status !== 'rejected';
+        
+        console.log(`Graduate ${graduate.name}:`, {
+          status: graduate.status,
+          isVerified: graduate.isVerified,
+          isArchived: graduate.isArchived,
+          isApproved,
+          isNotArchived,
+          isNotRejected,
+          willShow: isApproved && isNotArchived && isNotRejected
+        });
+        
+        return isApproved && isNotArchived && isNotRejected;
+      })
+      .map(data => {
         const { skills, role } = extractFromBio(data.bio);
         return { ...data, role: data.role || role, skillTags: data.skillTags?.length ? data.skillTags : skills };
-      }).sort((a, b) => a.name.localeCompare(b.name));
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+      
+      console.log('Filtered graduates to show:', list.length);
       
       setGraduates(list);
       setFilteredGraduates(list);
@@ -273,7 +303,7 @@ const BrowseGraduatesPage = () => {
           <div className="flex-1">
             <div className="mb-6">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">Graduate Directory</h1>
-              <p className="text-gray-600">Showing {filteredGraduates.length} of {graduates.length} verified graduates</p>
+              <p className="text-gray-600">Showing {filteredGraduates.length} of {graduates.length} approved graduates</p>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -331,6 +361,13 @@ const BrowseGraduatesPage = () => {
               <div className="text-center mt-12 text-gray-600">
                 <p className="text-lg mb-2">No graduates match your search criteria.</p>
                 <p className="text-sm">Try adjusting your filters or search terms.</p>
+              </div>
+            )}
+
+            {graduates.length === 0 && (
+              <div className="text-center mt-12 text-gray-600">
+                <p className="text-lg mb-2">No approved graduates found.</p>
+                <p className="text-sm">Check back later for new graduate profiles.</p>
               </div>
             )}
           </div>
